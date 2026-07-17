@@ -20,6 +20,7 @@ packages/
 # Environment
 .env
 .env.local
+appsettings.Development.json
 
 # Cache
 .cache/
