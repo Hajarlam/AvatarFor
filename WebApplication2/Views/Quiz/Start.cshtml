@@ -1,0 +1,221 @@
+@model LMS.Data.Quiz
+@{
+    ViewData["Title"] = "Démarrage Quiz - " + Model.Title;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .quiz-start-bg {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        padding: 3rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .quiz-card {
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+        padding: 3rem;
+        max-width: 650px;
+        width: 100%;
+        text-align: center;
+    }
+
+    .quiz-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: white;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 10px 25px rgba(2, 132, 199, 0.2);
+    }
+
+    .quiz-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 1rem;
+    }
+
+    .quiz-description {
+        font-size: 1.05rem;
+        color: #718096;
+        line-height: 1.6;
+        margin-bottom: 2.5rem;
+    }
+
+    .rules-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+        text-align: left;
+    }
+
+    .rule-item {
+        background: #f7fafc;
+        padding: 1.2rem;
+        border-radius: 16px;
+        border: 1px solid #edf2f7;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .rule-item i {
+        font-size: 1.5rem;
+        color: #0284c7;
+    }
+
+    .rule-label {
+        font-size: 0.85rem;
+        color: #a0aec0;
+        text-transform: uppercase;
+        font-weight: 700;
+        margin-bottom: 0.1rem;
+    }
+
+    .rule-value {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #2d3748;
+    }
+
+    .btn-launch {
+        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+        color: white;
+        border: none;
+        padding: 1.2rem 3rem;
+        font-size: 1.2rem;
+        font-weight: 700;
+        border-radius: 30px;
+        cursor: pointer;
+        width: 100%;
+        box-shadow: 0 10px 25px rgba(2, 132, 199, 0.25);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-launch:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 30px rgba(2, 132, 199, 0.4);
+    }
+
+    .btn-back {
+        display: inline-block;
+        margin-top: 1.5rem;
+        color: #718096;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s ease;
+    }
+
+    .btn-back:hover {
+        color: #2d3748;
+    }
+
+    .level-badge {
+        display: inline-block;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+
+    .badge-easy {
+        background: #e6fffa;
+        color: #319795;
+    }
+
+    .badge-medium {
+        background: #fffaf0;
+        color: #dd6b20;
+    }
+
+    .badge-hard {
+        background: #fff5f5;
+        color: #e53e3e;
+    }
+</style>
+
+<div class="quiz-start-bg">
+    <div class="quiz-card">
+        <div class="quiz-icon">
+            <i class="fas fa-brain"></i>
+        </div>
+        
+        <div class="text-center">
+            @if (Model.IsExam)
+            {
+                <span class="level-badge badge-easy" style="background: #e0f2fe; color: #0369a1;"><i class="fas fa-certificate me-1"></i>Examen de Certification Officiel</span>
+            }
+            else if (Model.Level == "Facile")
+            {
+                <span class="level-badge badge-easy"><i class="fas fa-circle me-1"></i>Niveau Facile</span>
+            }
+            else if (Model.Level == "Moyen")
+            {
+                <span class="level-badge badge-medium"><i class="fas fa-circle me-1"></i>Niveau Moyen</span>
+            }
+            else
+            {
+                <span class="level-badge badge-hard"><i class="fas fa-circle me-1"></i>Niveau Difficile</span>
+            }
+        </div>
+
+        <h1 class="quiz-title">@Model.Title</h1>
+        <p class="quiz-description">@Model.Description</p>
+
+        <div class="rules-grid">
+            <div class="rule-item">
+                <i class="fas fa-list-ol"></i>
+                <div>
+                    <div class="rule-label">Questions</div>
+                    <div class="rule-value">@Model.Questions.Count QCM</div>
+                </div>
+            </div>
+            
+            <div class="rule-item">
+                <i class="fas fa-clock"></i>
+                <div>
+                    <div class="rule-label">Temps limite</div>
+                    <div class="rule-value">@ViewBag.TimeLimit minutes</div>
+                </div>
+            </div>
+
+            <div class="rule-item">
+                <i class="fas fa-award"></i>
+                <div>
+                    <div class="rule-label">Score Requis</div>
+                    <div class="rule-value">@ViewBag.PassScore % minimum</div>
+                </div>
+            </div>
+
+            <div class="rule-item">
+                <i class="fas fa-folder-open"></i>
+                <div>
+                    <div class="rule-label">Catégorie</div>
+                    <div class="rule-value">@Model.Category</div>
+                </div>
+            </div>
+        </div>
+
+        <a href="/Quiz/Play/@Model.Id" class="btn-launch">
+            <i class="fas fa-play me-2"></i>@(Model.IsExam ? "Démarrer l'Examen" : "Démarrer le Quiz")
+        </a>
+
+        <a href="/Home/Dashboard" class="btn-back">
+            <i class="fas fa-arrow-left me-1"></i>Retour au Dashboard
+        </a>
+    </div>
+</div>

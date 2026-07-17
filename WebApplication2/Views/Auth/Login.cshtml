@@ -1,0 +1,109 @@
+@{
+    ViewData["Title"] = "Connexion";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="min-vh-100 d-flex align-items-center justify-content-center" style="background-color: #f8fafc; padding: 2rem 0;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="card border-0 rounded-4" style="background: #ffffff; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04); border: 1px solid #edf2f7 !important; border-top: 4px solid #d4af37 !important;">
+                    <!-- Header -->
+                    <div class="card-header bg-transparent border-0 text-center py-5">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">
+                            <i class="fas fa-robot" style="color: #0284c7;"></i>
+                        </div>
+                        <h2 class="fw-bold" style="color: #1e293b; font-family: 'Inter', sans-serif;">LMS Pro</h2>
+                        <p class="text-muted mt-2">Connectez-vous à votre espace d'apprentissage</p>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="card-body px-5 py-2">
+                        @if (ViewBag.Error != null)
+                        {
+                            <div class="alert alert-danger alert-dismissible fade show rounded-3" role="alert">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                <strong>Erreur!</strong> @ViewBag.Error
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        }
+
+                        <form method="post" class="needs-validation">
+                            <!-- Email/Username -->
+                            <div class="mb-4">
+                                <label for="username" class="form-label fw-600" style="color: #475569; font-weight: 600;">Nom d'utilisateur</label>
+                                <input type="text" 
+                                       class="form-control form-control-lg rounded-3" 
+                                       id="username" 
+                                       name="username" 
+                                       placeholder="student"
+                                       required
+                                       style="border: 2px solid #e2e8f0; padding: 12px 18px; font-size: 0.95rem;">
+                            </div>
+
+                            <!-- Password -->
+                            <div class="mb-4">
+                                <label for="password" class="form-label fw-600" style="color: #475569; font-weight: 600;">Mot de passe</label>
+                                <input type="password" 
+                                       class="form-control form-control-lg rounded-3" 
+                                       id="password" 
+                                       name="password" 
+                                       placeholder="••••••••"
+                                       required
+                                       style="border: 2px solid #e2e8f0; padding: 12px 18px; font-size: 0.95rem;">
+                            </div>
+
+                            <!-- Remember Me -->
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="checkbox" id="remember" name="remember">
+                                <label class="form-check-label" for="remember" style="color: #64748b; font-size: 0.9rem; font-weight: 500;">
+                                    Se souvenir de moi
+                                </label>
+                            </div>
+
+                            <!-- Login Button -->
+                            <button type="submit" class="btn btn-lg w-100 rounded-3 fw-600 btn-primary" 
+                                    style="background: #0284c7; border: none; padding: 14px; font-weight: 700; transition: all 0.2s ease;">
+                                <i class="fas fa-sign-in-alt me-2"></i>Se connecter
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="card-footer bg-transparent border-top-0 p-4 text-center">
+                        <div class="d-flex justify-content-center mb-2">
+                            <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-4" style="font-weight: 600; border-width: 2px; color: #0284c7; border-color: #0284c7;" onclick="quickLogin('student', 'student123')">
+                                <i class="fas fa-graduation-cap me-1"></i> Student Quick Entrance
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function quickLogin(username, password) {
+        document.getElementById('username').value = username;
+        document.getElementById('password').value = password;
+        document.querySelector('form').submit();
+    }
+</script>
+
+<style>
+    .min-vh-100 {
+        min-height: 100vh;
+    }
+
+    .form-control-lg:focus {
+        border-color: #667eea !important;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25) !important;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3) !important;
+    }
+</style>

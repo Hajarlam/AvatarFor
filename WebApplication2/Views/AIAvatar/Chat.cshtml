@@ -1,0 +1,287 @@
+@{
+    ViewData["Title"] = "Formateur Virtuel IA";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .avatar-page-bg {
+        background: linear-gradient(135deg, #14151f 0%, #0b0c10 100%);
+        min-height: 100vh;
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        align-self: flex-start;
+        color: #a0aec0;
+        text-decoration: none;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        transition: color 0.2s ease;
+    }
+
+    .back-btn:hover {
+        color: #ffffff;
+    }
+
+    .avatar-container {
+        display: flex;
+        justify-content: center;
+        max-width: 1000px;
+        margin: 0 auto;
+        width: 100%;
+        flex: 1;
+    }
+
+    .avatar-panel {
+        flex: 1;
+        background: transparent;
+        border-radius: 24px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        height: 720px;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    .avatar-body {
+        flex: 1;
+        background: #0f1016;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .start-screen {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 3rem;
+        background: linear-gradient(135deg, #161824 0%, #0d0d12 100%);
+        color: white;
+    }
+
+    .start-icon {
+        width: 90px;
+        height: 90px;
+        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.8rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 10px 25px rgba(2, 132, 199, 0.2);
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .start-screen h3 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #38bdf8 0%, #d4af37 100%); /* Bleu & Or */
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .start-screen p {
+        font-size: 1.1rem;
+        color: #94a3b8;
+        max-width: 450px;
+        margin-bottom: 2.5rem;
+        line-height: 1.6;
+    }
+
+    .btn-start {
+        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+        color: white;
+        border: none;
+        padding: 1rem 3rem;
+        font-size: 1.2rem;
+        font-weight: 600;
+        border-radius: 30px;
+        cursor: pointer;
+        box-shadow: 0 10px 20px rgba(2, 132, 199, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .btn-start:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 30px rgba(2, 132, 199, 0.3);
+    }
+
+    .stream-screen {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: #000;
+    }
+
+    .avatar-loader {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: #38bdf8;
+        font-size: 1.1rem;
+        gap: 1rem;
+    }
+
+    @@keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+</style>
+
+<div class="avatar-page-bg">
+    <a href="/Home/Dashboard" class="back-btn">
+        <i class="fas fa-arrow-left me-2"></i>Retour au Dashboard
+    </a>
+
+    <div class="avatar-container">
+        <!-- Avatar Panel -->
+        <div class="avatar-panel">
+            <div class="avatar-body" id="avatarBody">
+                <!-- Start Screen -->
+                <div id="startScreen" class="start-screen">
+                    <div class="start-icon"><i class="fas fa-graduation-cap"></i></div>
+                    <h3>Prêt à apprendre ?</h3>
+                    <p>Posez vos questions de vive voix et discutez naturellement avec votre tuteur virtuel.</p>
+                    <button class="btn-start" onclick="startSession()">
+                        <i class="fas fa-play me-2"></i>Commencer la Discussion
+                    </button>
+                </div>
+
+                <!-- Stream Screen -->
+                <div id="streamScreen" class="stream-screen" style="display: none;">
+                    <div class="avatar-loader">
+                        <i class="fas fa-spinner fa-spin fa-2x mb-3" style="color: #6366f1;"></i>
+                        <p>Connexion avec le formateur...</p>
+                    </div>
+                    <video id="anamVideo" autoplay playsinline style="display: none; width: 100%; height: 100%; object-fit: cover;"></video>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<audio id="audioPlayer" style="display: none;"></audio>
+
+@section Scripts {
+    <script type="module">
+        import { createClient, AnamEvent } from "https://esm.sh/@@anam-ai/js-sdk@latest";
+        window.createAnamClient = createClient;
+        window.AnamEvent = AnamEvent;
+    </script>
+    <script>
+        const PERSONA_ID = "dd7594a4-76ef-5e1f-9c9a-7afddd64b438";
+
+        // Lancer la session WebRTC au clic
+        function startSession() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('streamScreen').style.display = 'flex';
+            initAvatar();
+        }
+
+        // Initialiser l'avatar
+        async function initAvatar() {
+            const video = document.getElementById('anamVideo');
+            const loader = document.querySelector('.avatar-loader');
+
+            // Reset loader view if retrying
+            loader.innerHTML = `
+                <i class="fas fa-spinner fa-spin fa-2x mb-3" style="color: #6366f1;"></i>
+                <p>Connexion avec le formateur...</p>
+            `;
+
+            try {
+                // 1. Fetch session token from backend
+                const res = await fetch('/api/AvatarAPI/get-anam-token');
+                const data = await res.json();
+                if (!data.success) {
+                    throw new Error(data.error || "Failed to fetch session token");
+                }
+
+                // 2. Initialize Anam client once the esm module loads
+                const checkClient = setInterval(async () => {
+                    if (window.createAnamClient && window.AnamEvent) {
+                        clearInterval(checkClient);
+                        try {
+                            // Close existing stream if any
+                            if (window.currentAnamClient) {
+                                try { await window.currentAnamClient.stopStreaming(); } catch(e) {}
+                            }
+
+                            // Start client (microphone unmuted by default)
+                            const anamClient = window.createAnamClient(data.sessionToken);
+                            window.currentAnamClient = anamClient;
+                            
+                            // 3. Listen to user speech events
+                            anamClient.addListener(window.AnamEvent.USER_SPEECH_STARTED, () => {
+                                console.log('🎙️ User started speaking');
+                            });
+
+                            anamClient.addListener(window.AnamEvent.USER_SPEECH_ENDED, () => {
+                                console.log('🎙️ User stopped speaking');
+                            });
+
+                            // 4. Bind to video element and start stream
+                            await anamClient.streamToVideoElement("anamVideo");
+
+                            // 5. Hide loader, show video
+                            loader.style.display = 'none';
+                            video.style.display = 'block';
+                            console.log('✅ Avatar Anam AI chargé via WebRTC (Microphone actif)');
+                        } catch (err) {
+                            console.error('Error starting Anam stream:', err);
+                            const isConcurrencyErr = err.toString().includes("429") || err.toString().includes("Concurrency");
+                            
+                            if (isConcurrencyErr) {
+                                loader.innerHTML = `
+                                    <i class="fas fa-exclamation-triangle text-warning mb-2" style="font-size: 2rem;"></i>
+                                    <p style="padding: 0 1rem; font-size: 0.95rem; text-align: center;">Limite de connexion atteinte. Veuillez patienter 10 secondes pour que la session précédente se ferme.</p>
+                                    <button onclick="initAvatar()" class="btn-start" style="padding: 0.5rem 1.5rem; font-size: 0.95rem; margin-top: 10px;">Réessayer</button>
+                                `;
+                            } else {
+                                loader.innerHTML = `
+                                    <i class="fas fa-exclamation-triangle text-danger mb-2" style="font-size: 2rem;"></i>
+                                    <p>Erreur d'initialisation de l'avatar.</p>
+                                    <button onclick="initAvatar()" class="btn-start" style="padding: 0.5rem 1.5rem; font-size: 0.95rem; margin-top: 10px;">Réessayer</button>
+                                `;
+                            }
+                        }
+                    }
+                }, 50);
+
+            } catch (err) {
+                console.error('Error fetching Anam token:', err);
+                loader.innerHTML = `
+                    <i class="fas fa-exclamation-triangle text-danger mb-2" style="font-size: 2rem;"></i>
+                    <p>Erreur de connexion à l'avatar.</p>
+                    <button onclick="initAvatar()" class="btn-start" style="padding: 0.5rem 1.5rem; font-size: 0.95rem; margin-top: 10px;">Réessayer</button>
+                `;
+            }
+        }
+
+        // Clean up stream on page unload/refresh to free up concurrency
+        window.addEventListener('beforeunload', () => {
+            if (window.currentAnamClient) {
+                try {
+                    window.currentAnamClient.stopStreaming();
+                } catch (e) {
+                    console.error('Error stopping stream on unload:', e);
+                }
+            }
+        });
+    </script>
+}

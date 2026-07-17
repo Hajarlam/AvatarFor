@@ -1,0 +1,358 @@
+@model LMS.Controllers.ExamResultSessionModel
+@{
+    ViewData["Title"] = "Bulletin Officiel - " + Model.Category;
+    Layout = null; // Nous n'utilisons pas le layout général pour permettre une impression propre du bulletin
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bulletin - @Model.Category</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f0f2f5;
+            font-family: 'Montserrat', sans-serif;
+            color: #2d3748;
+            padding: 2rem 0;
+        }
+
+        .controls-container {
+            max-width: 800px;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-control {
+            padding: 0.8rem 1.8rem;
+            font-weight: 700;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-back-exams {
+            background: #ffffff;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+        }
+        .btn-back-exams:hover {
+            background: #f7fafc;
+        }
+
+        .btn-print-pdf {
+            background: #667eea;
+            color: #ffffff;
+            border: none;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        .btn-print-pdf:hover {
+            background: #5a6fd6;
+            transform: translateY(-1px);
+        }
+
+        /* Certificat / Bulletin Container */
+        .bulletin-sheet {
+            background: #ffffff;
+            width: 100%;
+            max-width: 800px;
+            min-height: 1000px;
+            margin: 0 auto;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 4rem;
+            border-radius: 4px;
+            position: relative;
+            box-sizing: border-box;
+            border: 16px double #cbd5e0;
+        }
+
+        /* Border design elements */
+        .sheet-corner {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #718096;
+        }
+        .corner-tl { top: 15px; left: 15px; border-right: none; border-bottom: none; }
+        .corner-tr { top: 15px; right: 15px; border-left: none; border-bottom: none; }
+        .corner-bl { bottom: 15px; left: 15px; border-right: none; border-top: none; }
+        .corner-br { bottom: 15px; right: 15px; border-left: none; border-top: none; }
+
+        /* Header Style */
+        .bulletin-header {
+            text-align: center;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .academy-logo {
+            font-family: 'Cinzel', serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #1a202c;
+            margin-bottom: 0.3rem;
+        }
+
+        .academy-subtitle {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 1.5rem;
+        }
+
+        .document-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2b6cb0;
+            margin-bottom: 0.2rem;
+            text-transform: uppercase;
+        }
+
+        /* Info Section */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: #a0aec0;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .info-value {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        /* Results table/block */
+        .results-box {
+            background: #f7fafc;
+            border: 1px solid #edf2f7;
+            border-radius: 12px;
+            padding: 2.5rem;
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .grade-display {
+            font-size: 4rem;
+            font-weight: 800;
+            color: #2b6cb0;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .grade-display span {
+            font-size: 2rem;
+            color: #a0aec0;
+            font-weight: 600;
+        }
+
+        .decision-display {
+            font-size: 1.6rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        .decision-passed { color: #38a169; }
+        .decision-failed { color: #e53e3e; }
+
+        .mention-display {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .mention-val {
+            font-weight: 800;
+            color: #2d3748;
+        }
+
+        /* Signature block */
+        .signature-section {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 6rem;
+            padding: 0 1rem;
+        }
+
+        .signature-block {
+            text-align: center;
+            width: 220px;
+        }
+
+        .signature-line {
+            border-top: 1px solid #cbd5e0;
+            margin-top: 3.5rem;
+            padding-top: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #718096;
+            text-transform: uppercase;
+        }
+
+        .seal-circle {
+            width: 80px;
+            height: 80px;
+            border: 3px double #718096;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cinzel', serif;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #718096;
+            transform: rotate(-15deg);
+        }
+
+        /* Print Media queries to force page sizes and hide buttons */
+        @@media print {
+            body {
+                background: #ffffff;
+                padding: 0;
+                color: #000000;
+            }
+
+            .controls-container {
+                display: none !important;
+            }
+
+            .bulletin-sheet {
+                box-shadow: none;
+                margin: 0;
+                padding: 2.5rem;
+                min-height: auto;
+                border: 8px double #000000;
+            }
+            
+            .sheet-corner {
+                border-color: #000000;
+            }
+
+            .results-box {
+                background: #ffffff;
+                border-color: #000000;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Controls (Hidden on print) -->
+    <div class="controls-container">
+        <a href="/Quiz/Exams" class="btn-control btn-back-exams">
+            <i class="fas fa-arrow-left"></i> Retour aux Examens
+        </a>
+        <button class="btn-control btn-print-pdf" onclick="window.print()">
+            <i class="fas fa-print"></i> Télécharger le Bulletin (PDF)
+        </button>
+    </div>
+
+    <!-- Official Bulletin Sheet -->
+    <div class="bulletin-sheet">
+        <!-- Borders corners -->
+        <div class="sheet-corner corner-tl"></div>
+        <div class="sheet-corner corner-tr"></div>
+        <div class="sheet-corner corner-bl"></div>
+        <div class="sheet-corner corner-br"></div>
+
+        <!-- Header -->
+        <div class="bulletin-header">
+            <div class="academy-logo">LMS PRO ACADEMY</div>
+            <div class="academy-subtitle">TRANSCRIPT ACADÉMIQUE OFFICIEL</div>
+            <div class="document-title">Bulletin de Notes</div>
+        </div>
+
+        <!-- Student & Exam Information -->
+        <div class="info-grid">
+            <div>
+                <div class="info-label">Nom de l'Apprenant</div>
+                <div class="info-value">@ViewBag.Username</div>
+            </div>
+            <div>
+                <div class="info-label">Date de Certification</div>
+                <div class="info-value">@Model.Date</div>
+            </div>
+            <div>
+                <div class="info-label">Technologie / Module</div>
+                <div class="info-value">@Model.Category</div>
+            </div>
+            <div>
+                <div class="info-label">Niveau d'Évaluation</div>
+                <div class="info-value">Examen de Certification Officiel</div>
+            </div>
+        </div>
+
+        <!-- Results Block -->
+        <div class="results-box">
+            <div class="info-label mb-2">Note Finale Obtenue</div>
+            <div class="grade-display">
+                @Model.Grade<span>/20</span>
+            </div>
+            
+            @if (Model.Passed)
+            {
+                <div class="decision-display decision-passed">Statut : ADMIS</div>
+            }
+            else
+            {
+                <div class="decision-display decision-failed">Statut : ÉCHOUÉ</div>
+            }
+            
+            <div class="mention-display">
+                Mention : <span class="mention-val">@Model.Mention</span>
+            </div>
+        </div>
+
+        <!-- Statement / Verification -->
+        <div class="text-center mt-5 px-3">
+            <p style="font-size: 0.95rem; line-height: 1.6; font-style: italic; color: #4a5568;">
+                Le présent document atteste de la validation des compétences fondamentales de l'apprenant dans la technologie mentionnée ci-dessus, suite à son évaluation finale sous le contrôle de la plateforme d'apprentissage LMS Pro.
+            </p>
+        </div>
+
+        <!-- Signatures & Seal -->
+        <div class="signature-section">
+            <div class="signature-block">
+                <div class="seal-circle">LMS SEAL</div>
+                <div class="info-label" style="font-size: 0.75rem;">Sceau Académique</div>
+            </div>
+            
+            <div class="signature-block">
+                <div class="signature-line">Direction des Études</div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

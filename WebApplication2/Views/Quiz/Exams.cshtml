@@ -1,0 +1,299 @@
+@model List<LMS.Data.Quiz>
+@{
+    ViewData["Title"] = "Examens de Certification";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var results = ViewBag.ExamResults as Dictionary<string, LMS.Controllers.ExamResultSessionModel>;
+}
+
+<style>
+    .exams-bg {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        padding: 3rem 2rem;
+    }
+
+    .exams-container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .exams-header {
+        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+        border-left: 6px solid #d4af37; /* Ligne d'accent OR */
+        color: white;
+        padding: 2.5rem 3rem;
+        border-radius: 24px;
+        margin-bottom: 3rem;
+        box-shadow: 0 15px 40px rgba(2, 132, 199, 0.15);
+    }
+ 
+    .exams-header h1 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+ 
+    .exams-header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin: 0;
+    }
+ 
+    .exams-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+ 
+    .exam-card {
+        background: white;
+        border-radius: 20px;
+        border: 1px solid #edf2f7;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem 2rem;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        transition: all 0.3s ease;
+    }
+ 
+    .exam-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+ 
+    .exam-icon-wrapper {
+        width: 65px;
+        height: 65px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+        flex-shrink: 0;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+ 
+    .exam-info {
+        flex: 1;
+    }
+ 
+    .exam-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin: 0 0 0.3rem 0;
+    }
+ 
+    .exam-desc {
+        color: #718096;
+        margin: 0;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+ 
+    .exam-result-badge {
+        padding: 1.2rem;
+        background: #fafbfe;
+        border: 1px solid #edf2f7;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        min-width: 320px;
+    }
+ 
+    .result-score {
+        text-align: center;
+        border-right: 1px solid #edf2f7;
+        padding-right: 1.2rem;
+    }
+ 
+    .result-score .score-num {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: #2d3748;
+        line-height: 1.1;
+    }
+ 
+    .result-score .score-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #a0aec0;
+        text-transform: uppercase;
+    }
+ 
+    .result-status-info {
+        flex: 1;
+    }
+ 
+    .status-pill {
+        display: inline-block;
+        padding: 0.2rem 0.6rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        margin-bottom: 0.2rem;
+    }
+ 
+    .status-passed {
+        background: #e6fffa;
+        color: #234e52;
+    }
+ 
+    .status-failed {
+        background: #fff5f5;
+        color: #742a2a;
+    }
+ 
+    .mention-text {
+        font-size: 0.85rem;
+        color: #718096;
+        font-weight: 600;
+    }
+ 
+    .btn-exam-action {
+        padding: 0.8rem 1.8rem;
+        font-weight: 700;
+        font-size: 0.95rem;
+        border-radius: 12px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 4px 10px rgba(2, 132, 199, 0.15);
+    }
+ 
+    .btn-start-exam {
+        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+        color: white;
+        border: none;
+    }
+ 
+    .btn-start-exam:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 15px rgba(2, 132, 199, 0.25);
+    }
+
+    .btn-bulletin {
+        background: white;
+        color: #4a5568;
+        border: 2px solid #edf2f7;
+        box-shadow: none;
+        padding: 0.7rem 1.2rem;
+        font-size: 0.85rem;
+    }
+
+    .btn-bulletin:hover {
+        background: #f7fafc;
+        border-color: #cbd5e0;
+    }
+</style>
+
+<div class="exams-bg">
+    <div class="exams-container">
+        <!-- Header -->
+        <div class="exams-header">
+            <h1><i class="fas fa-file-signature me-2"></i>Examens de Certification</h1>
+            <p>Passez les examens officiels et validez vos compétences pour obtenir vos bulletins académiques officiels (Note sur 20).</p>
+        </div>
+
+        <!-- Exams List -->
+        <div class="exams-list">
+            @foreach (var exam in Model)
+            {
+                var isCompleted = results != null && results.ContainsKey(exam.Id.ToString());
+                LMS.Controllers.ExamResultSessionModel result = null;
+                if (isCompleted)
+                {
+                    result = results[exam.Id.ToString()];
+                }
+
+                <div class="exam-card">
+                    <!-- Icon -->
+                    <div class="exam-icon-wrapper" style="background: @GetCategoryGradient(exam.Category)">
+                        <i class="@GetCategoryIcon(exam.Category)"></i>
+                    </div>
+
+                    <!-- Details -->
+                    <div class="exam-info">
+                        <h3 class="exam-title">@exam.Category - Examen Officiel</h3>
+                        <p class="exam-desc">@exam.Description</p>
+                    </div>
+
+                    <!-- Status/Action Area -->
+                    @if (isCompleted && result != null)
+                    {
+                        <div class="exam-result-badge">
+                            <div class="result-score">
+                                <div class="score-num">@result.Grade</div>
+                                <div class="score-label">sur 20</div>
+                            </div>
+                            
+                            <div class="result-status-info">
+                                @if (result.Passed)
+                                {
+                                    <span class="status-pill status-passed">Admis</span>
+                                }
+                                else
+                                {
+                                    <span class="status-pill status-failed">Échoué</span>
+                                }
+                                <div class="mention-text">Mention: <strong>@result.Mention</strong></div>
+                            </div>
+
+                            <a href="/Quiz/Bulletin/@exam.Id" class="btn-exam-action btn-bulletin">
+                                <i class="fas fa-print"></i> Bulletin
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <a href="/Quiz/Start/@exam.Id" class="btn-exam-action btn-start-exam">
+                            Passer l'Examen <i class="fas fa-arrow-right"></i>
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@{
+    string GetCategoryIcon(string cat) => cat switch
+    {
+        "HTML/CSS" => "fab fa-html5",
+        "Python" => "fab fa-python",
+        "Java" => "fab fa-java",
+        "JavaScript" => "fab fa-js",
+        "React" => "fab fa-react",
+        "Laravel" => "fab fa-laravel",
+        "PHP" => "fab fa-php",
+        ".NET" => "fas fa-cube",
+        "TypeScript" => "fas fa-code",
+        "Vue.js" => "fab fa-vuejs",
+        "SQL" => "fas fa-database",
+        "Docker" => "fab fa-docker",
+        _ => "fas fa-brain"
+    };
+
+    string GetCategoryGradient(string cat) => cat switch
+    {
+        "HTML/CSS" => "linear-gradient(135deg, #ff4b2b 0%, #ff416c 100%)",
+        "Python" => "linear-gradient(135deg, #30cfd0 0%, #330867 100%)",
+        "Java" => "linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)",
+        "JavaScript" => "linear-gradient(135deg, #f12711 0%, #f5af19 100%)",
+        "React" => "linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%)",
+        "Laravel" => "linear-gradient(135deg, #f857a6 0%, #ff5858 100%)",
+        "PHP" => "linear-gradient(135deg, #4f3b78 0%, #3f2b96 100%)",
+        ".NET" => "linear-gradient(135deg, #8a2387 0%, #e94057 100%)",
+        "TypeScript" => "linear-gradient(135deg, #1f4068 0%, #162447 100%)",
+        "Vue.js" => "linear-gradient(135deg, #41b883 0%, #35495e 100%)",
+        "SQL" => "linear-gradient(135deg, #2980b9 0%, #2c3e50 100%)",
+        "Docker" => "linear-gradient(135deg, #0984e3 0%, #74b9ff 100%)",
+        _ => "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+    };
+}

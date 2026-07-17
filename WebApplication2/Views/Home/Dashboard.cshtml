@@ -1,0 +1,732 @@
+@using LMS.Data
+@{
+    ViewData["Title"] = "Dashboard - Quiz et Formations";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .dashboard-bg {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        padding: 2rem;
+    }
+
+    .welcome-section {
+        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+        border-left: 6px solid #d4af37; /* Ligne d'accent OR */
+        color: white;
+        padding: 3rem;
+        border-radius: 20px;
+        margin-bottom: 3rem;
+        box-shadow: 0 20px 60px rgba(2, 132, 199, 0.15);
+    }
+
+    .welcome-section h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+
+    .welcome-section p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+    .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .stat-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #0284c7 0%, #d4af37 100%); /* Dégradé Bleu/Or */
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .stat-label {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .courses-section h2 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        color: #333;
+    }
+
+    .courses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .course-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        border: 1px solid #f0f0f0;
+    }
+
+    .course-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+    }
+
+    .course-header {
+        height: 150px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .course-header i {
+        font-size: 3.5rem;
+        color: white;
+        opacity: 0.8;
+    }
+
+    .course-body {
+        padding: 1.5rem;
+    }
+
+    .course-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    .course-description {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        min-height: 40px;
+    }
+
+    .course-instructor {
+        color: #999;
+        font-size: 0.85rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .quiz-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .btn-quiz {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+
+    .btn-quiz:hover {
+        transform: scale(1.02);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .level-indicator {
+        display: inline-block;
+        padding: 0.3rem 0.6rem;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 0.5rem;
+    }
+
+    .level-easy {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .level-medium {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .level-hard {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #999;
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .avatar-banner {
+        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+        border-left: 6px solid #d4af37; /* Border Gold */
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 3rem;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    .avatar-banner i {
+        font-size: 4rem;
+        opacity: 0.8;
+    }
+
+    .avatar-banner-content h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .avatar-banner-content p {
+        margin-bottom: 1rem;
+        opacity: 0.9;
+    }
+
+    .btn-avatar {
+        background: white;
+        color: #0284c7;
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-avatar:hover {
+        transform: translateX(5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Styles pour la liste verticale et accordéons */
+    .courses-vertical-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .category-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        border: 1px solid #edf2f7;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .category-card:hover {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .category-header-row {
+        padding: 1.5rem 2rem;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .category-icon-wrapper {
+        width: 70px;
+        height: 70px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2.2rem;
+        flex-shrink: 0;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .category-info {
+        flex: 1;
+    }
+
+    .category-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin: 0 0 0.3rem 0;
+    }
+
+    .category-desc {
+        color: #718096;
+        margin: 0;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    .category-action {
+        flex-shrink: 0;
+    }
+
+    .btn-toggle {
+        background: #f7fafc;
+        border: 2px solid #edf2f7;
+        color: #4a5568;
+        padding: 0.8rem 1.5rem;
+        font-weight: 700;
+        border-radius: 12px;
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .category-card:hover .btn-toggle {
+        border-color: #cbd5e0;
+        background: #edf2f7;
+    }
+
+    .btn-toggle.active {
+        background: #0284c7;
+        color: white;
+        border-color: #0284c7;
+    }
+
+    .btn-toggle.active i {
+        transform: rotate(180deg);
+    }
+
+    .btn-toggle i {
+        transition: transform 0.2s ease;
+    }
+
+    /* Boîte des niveaux */
+    .category-levels-box {
+        border-top: 1px solid #edf2f7;
+        background: #fafbfe;
+        padding: 2rem;
+        animation: slideDown 0.3s ease-out;
+    }
+
+    @@keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .levels-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .level-column {
+        background: white;
+        border: 1px solid #edf2f7;
+        border-radius: 16px;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 220px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+        transition: all 0.2s ease;
+    }
+
+    .level-column:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .level-header {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .level-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+    }
+
+    .easy .level-dot { background: #319795; }
+    .medium .level-dot { background: #dd6b20; }
+    .hard .level-dot { background: #e53e3e; }
+
+    .level-header h4 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #2d3748;
+    }
+
+    .level-details {
+        margin-bottom: 1.5rem;
+    }
+
+    .level-details p {
+        margin: 0 0 0.5rem 0;
+        font-size: 0.9rem;
+        color: #718096;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+    }
+
+    .level-details p i {
+        color: #a0aec0;
+        width: 16px;
+    }
+
+    .btn-level-action {
+        width: 100%;
+        padding: 10px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        border-radius: 10px;
+        text-decoration: none;
+        text-align: center;
+        transition: all 0.2s ease;
+        display: block;
+    }
+
+    .easy .btn-level-action {
+        background: #e6fffa;
+        color: #234e52;
+    }
+    .easy .btn-level-action:hover {
+        background: #319795;
+        color: white;
+    }
+
+    .medium .btn-level-action {
+        background: #fffaf0;
+        color: #7b341e;
+    }
+    .medium .btn-level-action:hover {
+        background: #dd6b20;
+        color: white;
+    }
+
+    .hard .btn-level-action {
+        background: #fff5f5;
+        color: #742a2a;
+    }
+    .hard .btn-level-action:hover {
+        background: #e53e3e;
+        color: white;
+    }
+</style>
+
+<div class="dashboard-bg">
+    <div class="container-fluid">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1>
+                        <i class="fas fa-wave-square me-2"></i>Bienvenue, @ViewBag.Username!
+                    </h1>
+                    <p>
+                        <i class="fas fa-calendar-today me-2"></i>@DateTime.Now.ToString("dddd, d MMMM yyyy", System.Globalization.CultureInfo.GetCultureInfo("fr-FR"))
+                    </p>
+                </div>
+                <a href="/Auth/Logout" class="btn btn-light rounded-pill px-4">
+                    <i class="fas fa-sign-out-alt me-2"></i>Déconnexion
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-book"></i></div>
+                <div class="stat-number">@ViewBag.TotalQuizzes</div>
+                <div class="stat-label">Quiz disponibles</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                <div class="stat-number">@ViewBag.CompletedQuizzes</div>
+                <div class="stat-label">Quiz complétés</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-percentage"></i></div>
+                <div class="stat-number">@ViewBag.AverageScore%</div>
+                <div class="stat-label">Score moyen</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-fire"></i></div>
+                <div class="stat-number">@ViewBag.Streak</div>
+                <div class="stat-label">Jours consécutifs</div>
+            </div>
+        </div>
+
+        <!-- Avatar Banner -->
+        <div class="avatar-banner">
+            <i class="fas fa-robot"></i>
+            <div class="avatar-banner-content flex-grow-1">
+                <h3>Formateur IA Intelligent</h3>
+                <p>Discutez avec votre tuteur virtuel pour obtenir de l'aide instantanée sur vos cours</p>
+            </div>
+            <a href="/AIAvatar/Chat" class="btn-avatar">
+                <i class="fas fa-comments me-2"></i>Lancer l'Avatar
+            </a>
+        </div>
+
+        <!-- Courses Section -->
+        <div class="courses-section">
+            <h2>
+                <i class="fas fa-graduation-cap me-2" style="color: #667eea;"></i>Vos Quiz et Formations
+            </h2>
+
+            @if (ViewBag.Quizzes != null && ((List<Quiz>)ViewBag.Quizzes).Count > 0)
+            {
+                <div class="courses-vertical-list">
+                    @foreach (var group in ((List<Quiz>)ViewBag.Quizzes).GroupBy(q => q.Category))
+                    {
+                        var category = group.Key;
+                        var categorySlug = category.Replace("/", "-").ToLower();
+                        var easyQuiz = group.FirstOrDefault(q => q.Level == "Facile");
+                        var mediumQuiz = group.FirstOrDefault(q => q.Level == "Moyen");
+                        var hardQuiz = group.FirstOrDefault(q => q.Level == "Difficile");
+
+                        <div class="category-card">
+                            <!-- Card Header (Clickable to toggle) -->
+                            <div class="category-header-row" onclick="toggleLevels('@categorySlug')">
+                                <div class="category-icon-wrapper" style="background: @GetCategoryGradient(category)">
+                                    <i class="@GetCategoryIcon(category)"></i>
+                                </div>
+                                
+                                <div class="category-info">
+                                    <h3 class="category-title">@category</h3>
+                                    <p class="category-desc">@GetCategoryDesc(category)</p>
+                                </div>
+                                
+                                <div class="category-action">
+                                    <button class="btn-toggle" id="btn-toggle-@categorySlug">
+                                        <span>Voir les Niveaux</span>
+                                        <i class="fas fa-chevron-down ms-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Collapsible Levels Area -->
+                            <div class="category-levels-box" id="levels-@categorySlug" style="display: none;">
+                                <div class="levels-grid">
+                                    <!-- Easy Level -->
+                                    @if (easyQuiz != null)
+                                    {
+                                        <div class="level-column easy">
+                                            <div class="level-header">
+                                                <span class="level-dot"></span>
+                                                <h4>Niveau Facile</h4>
+                                            </div>
+                                            <div class="level-details">
+                                                <p><i class="fas fa-question-circle"></i> 5 Questions (QCM)</p>
+                                                <p><i class="fas fa-clock"></i> 10 Minutes</p>
+                                                <p><i class="fas fa-percentage"></i> 60% requis</p>
+                                            </div>
+                                            <a href="/Quiz/Start/@easyQuiz.Id" class="btn-level-action">
+                                                Commencer <i class="fas fa-play ms-1"></i>
+                                            </a>
+                                        </div>
+                                    }
+
+                                    <!-- Medium Level -->
+                                    @if (mediumQuiz != null)
+                                    {
+                                        <div class="level-column medium">
+                                            <div class="level-header">
+                                                <span class="level-dot"></span>
+                                                <h4>Niveau Moyen</h4>
+                                            </div>
+                                            <div class="level-details">
+                                                <p><i class="fas fa-question-circle"></i> 10 Questions (QCM)</p>
+                                                <p><i class="fas fa-clock"></i> 20 Minutes</p>
+                                                <p><i class="fas fa-percentage"></i> 70% requis</p>
+                                            </div>
+                                            <a href="/Quiz/Start/@mediumQuiz.Id" class="btn-level-action">
+                                                Commencer <i class="fas fa-play ms-1"></i>
+                                            </a>
+                                        </div>
+                                    }
+
+                                    <!-- Hard Level -->
+                                    @if (hardQuiz != null)
+                                    {
+                                        <div class="level-column hard">
+                                            <div class="level-header">
+                                                <span class="level-dot"></span>
+                                                <h4>Niveau Difficile</h4>
+                                            </div>
+                                            <div class="level-details">
+                                                <p><i class="fas fa-question-circle"></i> 15 Questions (QCM)</p>
+                                                <p><i class="fas fa-clock"></i> 30 Minutes</p>
+                                                <p><i class="fas fa-percentage"></i> 80% requis</p>
+                                            </div>
+                                            <a href="/Quiz/Start/@hardQuiz.Id" class="btn-level-action">
+                                                Commencer <i class="fas fa-play ms-1"></i>
+                                            </a>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <h4>Aucun quiz disponible pour le moment</h4>
+                    <p>Revenez bientôt pour découvrir nos nouveaux contenus!</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleLevels(categorySlug) {
+        const box = document.getElementById(`levels-${categorySlug}`);
+        const btn = document.getElementById(`btn-toggle-${categorySlug}`);
+        
+        if (box.style.display === 'none') {
+            box.style.display = 'block';
+            btn.classList.add('active');
+            btn.querySelector('span').innerText = 'Fermer';
+        } else {
+            box.style.display = 'none';
+            btn.classList.remove('active');
+            btn.querySelector('span').innerText = 'Voir les Niveaux';
+        }
+    }
+</script>
+
+@{
+    string GetCategoryIcon(string cat) => cat switch
+    {
+        "HTML/CSS" => "fab fa-html5",
+        "Python" => "fab fa-python",
+        "Java" => "fab fa-java",
+        "JavaScript" => "fab fa-js",
+        "React" => "fab fa-react",
+        "Laravel" => "fab fa-laravel",
+        "PHP" => "fab fa-php",
+        ".NET" => "fas fa-cube",
+        "TypeScript" => "fas fa-code",
+        "Vue.js" => "fab fa-vuejs",
+        "SQL" => "fas fa-database",
+        "Docker" => "fab fa-docker",
+        _ => "fas fa-brain"
+    };
+
+    string GetCategoryGradient(string cat) => cat switch
+    {
+        "HTML/CSS" => "linear-gradient(135deg, #0284c7 0%, #d4af37 100%)", /* Blue to Gold */
+        "Python" => "linear-gradient(135deg, #0284c7 0%, #0284c7 100%)",
+        "Java" => "linear-gradient(135deg, #d4af37 0%, #f3d068 100%)", /* Gold */
+        "JavaScript" => "linear-gradient(135deg, #0284c7 0%, #38bdf8 100%)",
+        "React" => "linear-gradient(135deg, #0284c7 0%, #d4af37 100%)", /* Blue to Gold */
+        "Laravel" => "linear-gradient(135deg, #d4af37 0%, #aa831b 100%)", /* Gold */
+        "PHP" => "linear-gradient(135deg, #0284c7 0%, #0369a1 100%)",
+        ".NET" => "linear-gradient(135deg, #d4af37 0%, #f5c158 100%)", /* Gold */
+        "TypeScript" => "linear-gradient(135deg, #0284c7 0%, #075985 100%)",
+        "Vue.js" => "linear-gradient(135deg, #d4af37 0%, #aa831b 100%)", /* Gold */
+        "SQL" => "linear-gradient(135deg, #0284c7 0%, #d4af37 100%)", /* Blue to Gold */
+        "Docker" => "linear-gradient(135deg, #0284c7 0%, #0369a1 100%)",
+        _ => "linear-gradient(135deg, #0284c7 0%, #d4af37 100%)"
+    };
+
+    string GetCategoryDesc(string cat) => cat switch
+    {
+        "HTML/CSS" => "Maîtrisez la structure des pages web et le design responsive avec CSS moderne.",
+        "Python" => "Apprenez le langage le plus populaire pour le scripting, la data science et le backend.",
+        "Java" => "Explorez la programmation orientée objet robuste, le multithreading et la JVM.",
+        "JavaScript" => "Dominez la programmation dynamique du web, l'asynchronisme et ES6+.",
+        "React" => "Construisez des interfaces utilisateur dynamiques et réutilisables avec la bibliothèque React.",
+        "Laravel" => "Développez des applications web élégantes et rapides avec le framework PHP Laravel.",
+        "PHP" => "Maîtrisez le langage de programmation serveur historique du Web dynamique.",
+        ".NET" => "Découvrez la puissance de l'écosystème de développement moderne de Microsoft avec C#.",
+        "TypeScript" => "Ajoutez la sécurité du typage statique à vos applications JavaScript modernes.",
+        "Vue.js" => "Créez des applications web performantes avec le framework réactif Vue 3.",
+        "SQL" => "Interrogez, modifiez et gérez vos bases de données relationnelles en SQL standard.",
+        "Docker" => "Conteneurisez, distribuez et orchestrez vos microservices avec Docker.",
+        _ => "Évaluez vos compétences avec notre tuteur virtuel."
+    };
+}
+
+@{
+    string GetLevelStyle(string level)
+    {
+        return level switch
+        {
+            "Facile" => "background: #d4edda; color: #155724;",
+            "Moyen" => "background: #fff3cd; color: #856404;",
+            "Difficile" => "background: #f8d7da; color: #721c24;",
+            _ => "background: #e2e3e5; color: #383d41;"
+        };
+    }
+}

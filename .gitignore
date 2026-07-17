@@ -1,0 +1,24 @@
+# Build results
+bin/
+obj/
+*.user
+*.suo
+.vs/
+.vscode/
+
+# NuGet
+packages/
+*.nupkg
+
+# Database
+*.mdf
+*.ldf
+*.db
+
+# Environment
+.env
+.env.local
+
+# Cache
+.cache/
+.npm-cache/

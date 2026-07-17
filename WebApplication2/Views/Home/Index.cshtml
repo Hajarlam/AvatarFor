@@ -1,0 +1,343 @@
+@{
+    Layout = null;
+    ViewData["Title"] = "LMS Pro - Accueil";
+}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LMS Pro - Plateforme d'apprentissage intelligente</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Custom Navbar */
+        .navbar-custom {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 3px solid #d4af37; /* Ligne d'accent OR */
+            padding: 1.2rem 3rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand-custom {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #1a202c;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .navbar-brand-custom i {
+            color: #0284c7; /* Bleu clair */
+        }
+
+        /* Hero Section */
+        .hero-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5rem 2rem;
+            position: relative;
+        }
+
+        .calm-blob-1 {
+            position: absolute;
+            top: -10%;
+            right: -5%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(2, 132, 199, 0.08) 0%, rgba(255, 255, 255, 0) 70%);
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .calm-blob-2 {
+            position: absolute;
+            bottom: -10%;
+            left: -5%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.05) 0%, rgba(255, 255, 255, 0) 70%);
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .hero-content {
+            max-width: 1000px;
+            text-align: center;
+            z-index: 2;
+            position: relative;
+        }
+
+        .hero-tag {
+            background-color: #e0f2fe; /* Light Blue */
+            color: #0369a1;
+            padding: 0.5rem 1.2rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-title span {
+            color: #0284c7; /* Bleu clair */
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: #475569;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            line-height: 1.7;
+            font-weight: 500;
+        }
+
+        .btn-actions-group {
+            display: flex;
+            gap: 1.2rem;
+            justify-content: center;
+            margin-bottom: 5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-calm {
+            padding: 1rem 2.2rem;
+            font-size: 1.05rem;
+            font-weight: 700;
+            border-radius: 14px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .btn-calm-primary {
+            background-color: #0284c7; /* Bleu clair */
+            color: white;
+            border: none;
+            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.25);
+        }
+
+        .btn-calm-primary:hover {
+            background-color: #0369a1;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(2, 132, 199, 0.35);
+        }
+
+        .btn-calm-secondary {
+            background-color: #ffffff;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-calm-secondary:hover {
+            background-color: #f0f9ff;
+            color: #0284c7;
+            border-color: #cbd5e0;
+            transform: translateY(-2px);
+        }
+
+        /* Features Grid */
+        .features-grid-calm {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.8rem;
+            margin-top: 2rem;
+        }
+
+        @@media (max-width: 992px) {
+            .features-grid-calm {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .features-grid-calm {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .feature-card-calm {
+            background: white;
+            border: 1px solid #f1f5f9;
+            padding: 2.2rem 1.8rem;
+            border-radius: 20px;
+            text-align: left;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
+        }
+
+        .feature-card-calm:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+            border-color: #e2e8f0;
+        }
+
+        .feature-icon-calm {
+            width: 55px;
+            height: 55px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .icon-blue { background-color: #e0f2fe; color: #0284c7; }
+        .icon-gold { background-color: #fef3c7; color: #b45309; }
+
+        .feature-card-calm h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.6rem;
+        }
+
+        .feature-card-calm p {
+            color: #475569;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: 0;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Custom Navbar -->
+    <nav class="navbar-custom d-flex justify-content-between align-items-center">
+        <a href="/" class="navbar-brand-custom">
+            <i class="fas fa-brain"></i> LMS Pro
+        </a>
+        <a href="/Auth/Login" class="btn btn-outline-primary rounded-pill px-4" style="font-weight: 700; border-width: 2px; color: #0284c7; border-color: #0284c7;">
+            <i class="fas fa-sign-in-alt me-2"></i>Se connecter
+        </a>
+    </nav>
+
+    <!-- Hero Body Section -->
+    <div class="hero-section">
+        <!-- Calm Background Blobs -->
+        <div class="calm-blob-1"></div>
+        <div class="calm-blob-2"></div>
+
+        <div class="hero-content">
+            <!-- Badge -->
+            <span class="hero-tag">
+                <i class="fas fa-sparkles me-1"></i> Plateforme d'apprentissage intelligente
+            </span>
+
+            <!-- Title -->
+            <h1 class="hero-title">
+                Propulsez vos compétences<br>grâce à l'<span>Intelligence Artificielle</span>
+            </h1>
+
+            <!-- Subtitle -->
+            <p class="hero-subtitle">
+                Une interface calme et moderne conçue pour votre réussite. Échangez par voix native avec votre tuteur IA, évaluez vos compétences sur 12 technologies et obtenez vos certificats officiels.
+            </p>
+
+            <!-- Actions -->
+            <div class="btn-actions-group">
+                <a href="/Auth/Login" class="btn-calm btn-calm-primary">
+                    Commencer l'Apprentissage <i class="fas fa-arrow-right"></i>
+                </a>
+                <a href="#details" class="btn-calm btn-calm-secondary">
+                    En savoir plus
+                </a>
+            </div>
+
+            <!-- Calm Features Grid -->
+            <div class="features-grid-calm" id="details">
+                <div class="feature-card-calm">
+                    <div class="feature-icon-calm icon-blue">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>Formateur Vocal</h3>
+                    <p>Posez vos questions de vive voix et écoutez les explications fluides en français de l'avatar Olivia.</p>
+                </div>
+
+                <div class="feature-card-calm">
+                    <div class="feature-icon-calm icon-gold">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h3>Quiz Structurés</h3>
+                    <p>Évaluez-vous sur 12 technologies majeures à travers 3 niveaux de difficulté (Facile, Moyen, Difficile).</p>
+                </div>
+
+                <div class="feature-card-calm">
+                    <div class="feature-icon-calm icon-blue">
+                        <i class="fas fa-file-signature"></i>
+                    </div>
+                    <h3>Certifications</h3>
+                    <p>Validez vos modules par un examen final et téléchargez votre bulletin de notes officiel au format PDF.</p>
+                </div>
+
+                <div class="feature-card-calm">
+                    <div class="feature-icon-calm icon-gold">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Suivi Dynamique</h3>
+                    <p>Visualisez vos performances en temps réel sur un tableau de bord épuré et motivant.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>

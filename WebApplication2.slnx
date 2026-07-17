@@ -1,0 +1,14 @@
+{
+  "version": "0.1",
+  "solution": {
+    "name": "WebApplication2",
+    "path": ".",
+    "projects": [
+      {
+        "name": "WebApplication2",
+        "path": "WebApplication2/WebApplication2.csproj",
+        "type": "csharp"
+      }
+    ]
+  }
+}
